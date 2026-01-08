@@ -9,7 +9,30 @@ load_dotenv()
 
 
 class NewsCollector:
+    """
+    Collects news articles about major waterways using the NewsAPI and stores them in an S3 bucket.
+    
+    Attributes:
+        api_key: The News API key retrieved from the ``NEWS_API_KEY`` environment variable.
+        s3_loader: An ``S3Loader`` instance used for uploading JSON data to S3; a default instance is created if none is provided.
+    """
     def __init__(self, s3_loader=None):
+        """
+        Initializes the object, loading the required API key and setting up an S3 loader.
+        
+        Args:
+            self: The instance being initialized.
+        
+        Attributes:
+            api_key: The News API key retrieved from the ``NEWS_API_KEY`` environment variable.
+            s3_loader: An ``S3Loader`` instance used for loading data from S3; if not supplied, a default ``S3Loader`` is created.
+        
+        Raises:
+            ValueError: If the ``NEWS_API_KEY`` environment variable is missing.
+        
+        Returns:
+            None
+        """
         self.api_key = os.getenv("NEWS_API_KEY")
         if not self.api_key:
             raise ValueError("NEWS_API_KEY not found in environment variables")
@@ -17,6 +40,15 @@ class NewsCollector:
         self.s3_loader = s3_loader or S3Loader()
 
     def collect(self):
+        """
+        Collect news articles related to major waterways and store them in an S3 bucket.
+        
+        Args:
+            self: The instance containing the `api_key` used for the NewsAPI request and the `s3_loader` used to upload JSON data to S3.
+        
+        Returns:
+            None: The method uploads the fetched articles to S3 and prints status messages; it does not return a value.
+        """
         url = "https://newsapi.org/v2/everything"
         params = {
             "q": "Suez Canal OR Panama Canal OR Strait of Gibraltar OR Bosporus Strait OR Strait of Malacca",
